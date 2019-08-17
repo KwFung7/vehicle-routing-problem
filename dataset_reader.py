@@ -1,20 +1,13 @@
 #!/usr/bin/env python3.7
 # -*- coding: utf-8 -*-
-
 import configparser
 import csv
-
-
-def get_global_config():
-    parser = configparser.ConfigParser()
-    parser.read('config.ini')
-    global_config = parser['GLOBAL']
-    return global_config
+import config
 
 
 # Get specific node that represents either depot or warehouse
 def get_node(name='depo'):
-    global_config = get_global_config()
+    global_config = config.get_global_config()
     with open(global_config['DATASET_PATH'], newline='') as dataset:
         # Read csv dataset
         datadict = csv.DictReader(dataset)
