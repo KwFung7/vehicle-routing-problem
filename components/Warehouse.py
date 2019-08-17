@@ -1,6 +1,5 @@
 #!/usr/bin/env python3.7
 # -*- coding: utf-8 -*-
-import math
 import config
 
 
@@ -41,12 +40,12 @@ class Warehouse:
                     self.max_warehouse_size = self.max_warehouse_size + self.added_warehouse_size[index]
                     warehouse_purchase_cost = warehouse_purchase_cost + (29.725 * self.max_warehouse_size * self.days_used / int(global_config['SIMULATION_DAYS']))
                 index = index + 1
-            print('Warehouse Purchase Cost [ capacity: {}, days used: {} ]: {}'
-                  .format(self.max_warehouse_size, int(global_config['SIMULATION_DAYS']) - self.purchase_date, warehouse_purchase_cost))
+            print('Warehouse {} Purchase Cost [ capacity: {}, days used: {} ]: {}'
+                  .format(self.warehouse_number, self.max_warehouse_size, int(global_config['SIMULATION_DAYS']) - self.purchase_date, warehouse_purchase_cost))
             return warehouse_purchase_cost
 
         else:
             warehouse_purchase_cost = 29.725 * self.max_warehouse_size * self.days_used / int(global_config['SIMULATION_DAYS'])
-            print('Warehouse Purchase Cost [ capacity: {}, days used: {} ]: {}'
-                  .format(self.max_warehouse_size, self.days_used, warehouse_purchase_cost))
+            print('Warehouse {} Purchase Cost [ capacity: {}, days used: {} ]: {}'
+                  .format(self.warehouse_number, self.max_warehouse_size, self.days_used, warehouse_purchase_cost))
             return warehouse_purchase_cost
