@@ -6,7 +6,7 @@ import config
 
 
 # Get specific node that represents either depot or warehouse
-def get_node(name='depo'):
+def get_node(name='D1'):
     global_config = config.get_global_config()
     with open(global_config['DATASET_PATH'], newline='') as dataset:
         # Read csv dataset
