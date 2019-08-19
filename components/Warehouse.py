@@ -7,8 +7,7 @@ class Warehouse:
     added_warehouse_size = []
     additional_purchase_date = []
 
-    def __init__(self, warehouse_number, max_warehouse_size, purchase_date, inventory, demand, demand_growth, size_limit):
-        global_config = config.get_global_config()
+    def __init__(self, warehouse_number, max_warehouse_size, purchase_date, inventory, demand, demand_growth, size_limit, truck_size_limit):
         self.warehouse_number = warehouse_number
         self.max_warehouse_size = max_warehouse_size if max_warehouse_size <= size_limit else size_limit
         self.purchase_date = purchase_date
@@ -16,9 +15,14 @@ class Warehouse:
         self.demand = demand
         self.demand_growth = demand_growth
         self.size_limit = size_limit
+        self.truck_size_limit = truck_size_limit
 
     # Purchase additional warehouse size, update the record
     def purchase_additional_warehouse_size(self, size, date):
+        # Depot cant purchase more size
+        if self.warehouse_number == 'D1':
+            return
+
         if self.max_warehouse_size + size <= self.size_limit:
             self.added_warehouse_size.append(size)
             self.additional_purchase_date.append(date)
@@ -29,6 +33,10 @@ class Warehouse:
     def get_warehouse_purchase_cost(self):
         global_config = config.get_global_config()
         days_used = int(global_config['SIMULATION_DAYS']) - self.purchase_date
+
+        # Depot dont have purchase cost
+        if self.warehouse_number == 'D1':
+            return 0
 
         # When warehouse has additional size
         if len(self.additional_purchase_date) > 0:
