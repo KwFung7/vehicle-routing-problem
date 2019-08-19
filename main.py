@@ -7,9 +7,10 @@ from components.Truck import Truck
 from components.TruckList import TruckList
 from components.Warehouse import Warehouse
 from components.WarehouseList import WarehouseList
+from helpers import helper
 
 
-def initializeTrucks():
+def initialize_trucks():
     global_config = config.get_global_config()
     standard_unit = int(global_config['STANDARD_UNIT'])
     truck_list = TruckList()
@@ -20,7 +21,7 @@ def initializeTrucks():
     return truck_list
 
 
-def initializeWarehouses():
+def initialize_warehouses():
     global_config = config.get_global_config()
     standard_unit = int(global_config['STANDARD_UNIT'])
     warehouse_list = WarehouseList()
@@ -32,7 +33,11 @@ def initializeWarehouses():
         # Retrieve warehouse data in dataset and append it to warehouse list
         for row in datadict:
             maximum_warehouse_size = int(row['maximum_warehouse_size'])\
-                if len(row['maximum_warehouse_size']) != 0 else sys.maxsize
+                if len(row['maximum_warehouse_size']) != 0 else int(sys.maxsize)
+
+            # Create distance mapping
+            mapping = helper.create_distance_mapping(row)
+
             warehouse = Warehouse(
                 row['depot_warehouse_name'],
                 standard_unit,
@@ -41,7 +46,8 @@ def initializeWarehouses():
                 float(row['demand']),
                 float(row['demand_growth_rate']),
                 maximum_warehouse_size,
-                int(row['possible_truck_size'])
+                int(row['possible_truck_size']),
+                mapping
             )
             warehouse_list.append_warehouse_record(warehouse)
     return warehouse_list
@@ -49,8 +55,8 @@ def initializeWarehouses():
 
 def main():
     # Initialize warehouses and trucks
-    truck_list = initializeTrucks()
-    warehouse_list = initializeWarehouses()
+    truck_list = initialize_trucks()
+    warehouse_list = initialize_warehouses()
 
     truck_list.get_total_truck_purchase_cost()
     truck_list.get_total_truck_operating_cost()
