@@ -7,7 +7,7 @@ class Warehouse:
     added_warehouse_size = []
     additional_purchase_date = []
 
-    def __init__(self, warehouse_number, max_warehouse_size, purchase_date, inventory, demand, demand_growth, size_limit, truck_size_limit):
+    def __init__(self, warehouse_number, max_warehouse_size, purchase_date, inventory, demand, demand_growth, size_limit, truck_size_limit, mapping):
         self.warehouse_number = warehouse_number
         self.max_warehouse_size = max_warehouse_size if max_warehouse_size <= size_limit else size_limit
         self.purchase_date = purchase_date
@@ -16,6 +16,7 @@ class Warehouse:
         self.demand_growth = demand_growth
         self.size_limit = size_limit
         self.truck_size_limit = truck_size_limit
+        self.mapping = mapping
 
     # Purchase additional warehouse size, update the record
     def purchase_additional_warehouse_size(self, size, date):
