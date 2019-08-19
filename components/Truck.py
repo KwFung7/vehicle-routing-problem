@@ -8,13 +8,11 @@ class Truck:
     operation_days = 0
     arrival_count = 0
 
-    def __init__(self, truck_number, truck_size, purchase_date, products_inventory, size_limit):
-        global_config = config.get_global_config()
+    def __init__(self, truck_number, truck_size, purchase_date, products_inventory):
         self.truck_number = truck_number
-        self.truck_size = truck_size if truck_size <= size_limit else size_limit
+        self.truck_size = truck_size
         self.purchase_date = purchase_date
         self.products_inventory = products_inventory if products_inventory <= self.truck_size else self.truck_size
-        self.size_limit = size_limit
 
     # Set actual days took that truck was moving
     def add_operation_day(self, days):
