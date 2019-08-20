@@ -15,3 +15,4 @@ class WarehouseList:
         for warehouse in self.warehouse_list:
             self.total_warehouse_purchase_cost = self.total_warehouse_purchase_cost + warehouse.get_warehouse_purchase_cost()
         print('All Warehouse Purchase Cost: {}'.format(self.total_warehouse_purchase_cost))
+        return self.total_warehouse_purchase_cost

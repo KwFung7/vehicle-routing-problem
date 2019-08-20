@@ -8,6 +8,7 @@ from components.TruckList import TruckList
 from components.Warehouse import Warehouse
 from components.WarehouseList import WarehouseList
 from helpers import helper
+from helpers import dijkstra
 
 
 def initialize_trucks():
@@ -33,7 +34,7 @@ def initialize_warehouses():
         # Retrieve warehouse data in dataset and append it to warehouse list
         for row in datadict:
             maximum_warehouse_size = int(row['maximum_warehouse_size'])\
-                if len(row['maximum_warehouse_size']) != 0 else int(sys.maxsize)
+                if len(row['maximum_warehouse_size']) != 0 else float('inf')
 
             # Create distance mapping
             mapping = helper.create_distance_mapping(row)
@@ -55,13 +56,17 @@ def initialize_warehouses():
 
 def main():
     # Initialize warehouses and trucks
-    truck_list = initialize_trucks()
-    warehouse_list = initialize_warehouses()
+    truck_list_inst = initialize_trucks()
+    warehouse_list_inst = initialize_warehouses()
 
-    truck_list.get_total_truck_purchase_cost()
-    truck_list.get_total_truck_operating_cost()
+    truck_list_inst.get_total_truck_purchase_cost()
+    truck_list_inst.get_total_truck_operating_cost()
 
-    warehouse_list.get_total_warehouse_purchase_cost()
+    warehouse_list_inst.get_total_warehouse_purchase_cost()
+
+    shortest_path = dijkstra.find_path(warehouse_list_inst.warehouse_list)
+    for node in shortest_path:
+        print('| {}'.format(node.warehouse_number))
 
 
 if __name__ == '__main__':

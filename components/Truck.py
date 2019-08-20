@@ -12,7 +12,7 @@ class Truck:
         self.truck_number = truck_number
         self.truck_size = truck_size
         self.purchase_date = purchase_date
-        self.products_inventory = products_inventory if products_inventory <= self.truck_size else self.truck_size
+        self.products_inventory = min(products_inventory, self.truck_size)
 
     # Set actual days took that truck was moving
     def add_operation_day(self, days):

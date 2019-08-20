@@ -9,14 +9,16 @@ class Warehouse:
 
     def __init__(self, warehouse_number, max_warehouse_size, purchase_date, inventory, demand, demand_growth, size_limit, truck_size_limit, mapping):
         self.warehouse_number = warehouse_number
-        self.max_warehouse_size = max_warehouse_size if max_warehouse_size <= size_limit else size_limit
+        self.max_warehouse_size = min(max_warehouse_size, size_limit)
         self.purchase_date = purchase_date
-        self.inventory = inventory if inventory <= self.max_warehouse_size else self.max_warehouse_size
+        self.inventory = min(inventory, self.max_warehouse_size)
         self.demand = demand
         self.demand_growth = demand_growth
         self.size_limit = size_limit
         self.truck_size_limit = truck_size_limit
         self.mapping = mapping
+        # Apply in dijkstra method, origin set to 0, other nodes set to infinity
+        self.smallest_distance_to_depot = 0 if warehouse_number == 'D1' else float('inf')
 
     # Purchase additional warehouse size, update the record
     def purchase_additional_warehouse_size(self, size, date):
@@ -28,7 +30,7 @@ class Warehouse:
             self.added_warehouse_size.append(size)
             self.additional_purchase_date.append(date)
         else:
-            print('Error: Warehouse {} size cannot exceed size limit {}'.format(self.warehouse_number, self.size_limit))
+            raise RuntimeError('Warehouse {} size cannot exceed size limit {}'.format(self.warehouse_number, self.size_limit))
 
     # Get warehouse purchase cost with warehouse maximum capacity and days used
     def get_warehouse_purchase_cost(self):
