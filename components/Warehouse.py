@@ -6,6 +6,7 @@ import config
 class Warehouse:
     added_warehouse_size = []
     additional_purchase_date = []
+    closest_warehouse = None
 
     def __init__(self, warehouse_number, max_warehouse_size, purchase_date, inventory, demand, demand_growth, size_limit, truck_size_limit, mapping):
         self.warehouse_number = warehouse_number
@@ -18,7 +19,7 @@ class Warehouse:
         self.truck_size_limit = truck_size_limit
         self.mapping = mapping
         # Apply in dijkstra method, origin set to 0, other nodes set to infinity
-        self.smallest_distance_to_depot = 0 if warehouse_number == 'D1' else float('inf')
+        self.smallest_time_to_depot = 0 if warehouse_number == 'D1' else float('inf')
 
     # Purchase additional warehouse size, update the record
     def purchase_additional_warehouse_size(self, size, date):
