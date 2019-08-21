@@ -1,4 +1,4 @@
-depot_warehouse_name,demand,demand_growth_rate,possible_truck_size,maximum_warehouse_size,depo_distance,wh1_distance,wh2_distance,wh3_distance,wh4_distance,wh5_distance,wh6_distance,wh7_distance,wh8_distance,wh9_distance,wh10_distance,wh11_distance,wh12_distance,wh13_distance,wh14_distance,wh15_distance
+depot_warehouse_name,demand,demand_growth_rate,possible_truck_size,maximum_warehouse_size,D1,W1,W2,W3,W4,W5,W6,W7,W8,W9,W10,W11,W12,W13,W14,W15
 D1,0,0.0041,320,,0,1.3987,1.8006,1.1897,0.9325,0.8039,0.418,1.0772,1.045,1.1415,1.0289,1.2862,1.1736,0.7878,0.4823,1.045
 W1,4.737501606,0.0041,320,320,1.3987,0,1.2219,0.5627,0.5547,0.7556,1.0611,1.5916,1.5756,1.8167,1.3183,2.6849,2.4437,2.0579,1.7524,2.3151
 W2,5.561724341,0.0041,320,320,1.8006,1.2219,0,1.5595,1.4309,1.5434,1.5595,2.5723,2.5241,2.717,2.4116,3.1994,2.9582,2.5723,2.2669,2.8296
