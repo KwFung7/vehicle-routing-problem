@@ -1,0 +1,93 @@
+#!/usr/bin/env python3.7
+# -*- coding: utf-8 -*-
+import random
+import config
+
+
+class Reinforcement:
+    # 1. All nodes already set with 0 path score for reinforcement learning
+    # 2. Initialize unvisited, visited list and shortest path
+    unvisited_list = []
+    visited_list = []
+    shortest_path = []
+    shortest_cycle_time = float('inf')
+
+    def __init__(self, warehouse_list):
+        self.warehouse_list = warehouse_list
+
+    def run_simulation(self):
+        global_config = config.get_global_config()
+        reinforcement_config = config.get_reinforcement_config()
+
+        current_node = self.unvisited_list[0]
+        self.unvisited_list.remove(current_node)
+        self.visited_list.append(current_node)
+        total_cycle_time = 0
+
+        # 4. Repeat until all the node is visited
+        while len(self.unvisited_list) > 0:
+            # 5. Randomly select next node when random value is larger than threshold,
+            # this step increase the randomization in our reinforcement
+            if random.random() > float(reinforcement_config['RANDOM_THRESHOLD']):
+                selected_node = random.choice(self.unvisited_list)
+
+                # Get node travel time from selected node to current node
+                node_travel_time = float(selected_node.mapping[current_node.warehouse_number])
+                total_cycle_time = total_cycle_time + node_travel_time + float(global_config['LOAD_PRODUCT_TIME'])
+            else:
+                # 6. When random value is smaller than threshold,
+                # select the next node based on path score and node travel time
+                selected_node = max(self.unvisited_list,
+                                    key=lambda node: node.path_score[current_node.warehouse_number] / float(
+                                        node.mapping[current_node.warehouse_number]))
+
+                # Get node travel time from selected node to current node
+                node_travel_time = float(selected_node.mapping[current_node.warehouse_number])
+                total_cycle_time = total_cycle_time + node_travel_time + float(global_config['LOAD_PRODUCT_TIME'])
+
+            # 7. Update the list and current node
+            self.unvisited_list.remove(selected_node)
+            self.visited_list.append(selected_node)
+            current_node = selected_node
+
+        # 8. Add travel time for returning to depot
+        total_cycle_time += float(self.visited_list[-1].mapping['D1']) + float(global_config['LOAD_PRODUCT_TIME'])
+
+        # 9. Record the shortest cycle time in each repeat cycle
+        if total_cycle_time < self.shortest_cycle_time:
+
+            index = 0
+            # 10. Reward the preferred path with higher path score
+            for visited_node in self.visited_list:
+                if index == 0:
+                    visited_node.path_score[visited_node.warehouse_number] += 1
+                visited_node.path_score[self.visited_list[index - 1].warehouse_number] += 1
+                index += 1
+
+            self.shortest_cycle_time = total_cycle_time
+            self.shortest_path = self.visited_list.copy()
+            print('Update shortest path travel time: {0:.2f} days'.format(self.shortest_cycle_time))
+
+        # 11. Reset the list for next round
+        self.unvisited_list = self.warehouse_list.copy()
+        self.visited_list.clear()
+
+    def get_shortest_path(self):
+        reinforcement_config = config.get_reinforcement_config()
+        self.unvisited_list = self.warehouse_list.copy()
+
+        # 3. Repeat simulation to investigate shortest path
+        repeat_cycle = 0
+        while repeat_cycle <= int(reinforcement_config['REPEAT_TIME']):
+            self.run_simulation()
+            repeat_cycle = repeat_cycle + 1
+            print('Running shortest path simulation {0:.2f}% ...'
+                  .format(repeat_cycle / int(reinforcement_config['REPEAT_TIME']) * 100))
+
+        print('Shortest path travel time: {0:.2f} days'.format(self.shortest_cycle_time))
+        for node in self.shortest_path:
+            print(' 🡲 {}'.format(node.warehouse_number), end="")
+        print(' 🡲 D1')
+        return self.shortest_path
+
+
