@@ -2,13 +2,12 @@
 # -*- coding: utf-8 -*-
 import config
 import csv
-import sys
-from components.Truck import Truck
-from components.TruckList import TruckList
-from components.Warehouse import Warehouse
-from components.WarehouseList import WarehouseList
+from components.truck import Truck
+from components.truck_list import TruckList
+from components.warehouse import Warehouse
+from components.warehouse_list import WarehouseList
 from helpers import helper
-from helpers import dijkstra
+from helpers.reinforcement import Reinforcement
 
 
 def initialize_trucks():
@@ -29,6 +28,7 @@ def initialize_warehouses():
 
     with open(global_config['DATASET_PATH'], newline='') as dataset:
         # Return csv dataset
+        print('Using {}...'.format(global_config['DATASET_PATH']))
         datadict = csv.DictReader(dataset)
 
         # Retrieve warehouse data in dataset and append it to warehouse list
@@ -59,14 +59,12 @@ def main():
     truck_list_inst = initialize_trucks()
     warehouse_list_inst = initialize_warehouses()
 
+    reinforcement = Reinforcement(warehouse_list_inst.warehouse_list)
+    shortest_path = reinforcement.get_shortest_path()
+
     truck_list_inst.get_total_truck_purchase_cost()
     truck_list_inst.get_total_truck_operating_cost()
-
     warehouse_list_inst.get_total_warehouse_purchase_cost()
-
-    shortest_path = dijkstra.find_path(warehouse_list_inst.warehouse_list)
-    for node in shortest_path:
-        print('| {}'.format(node.warehouse_number))
 
 
 if __name__ == '__main__':
