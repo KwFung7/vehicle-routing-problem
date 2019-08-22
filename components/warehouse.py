@@ -6,7 +6,6 @@ import config
 class Warehouse:
     added_warehouse_size = []
     additional_purchase_date = []
-    closest_warehouse = None
 
     def __init__(self, warehouse_number, max_warehouse_size, purchase_date, inventory, demand, demand_growth, size_limit, truck_size_limit, mapping):
         self.warehouse_number = warehouse_number
@@ -18,8 +17,7 @@ class Warehouse:
         self.size_limit = size_limit
         self.truck_size_limit = truck_size_limit
         self.mapping = mapping
-        # Apply in dijkstra method, origin set to 0, other nodes set to infinity
-        self.smallest_time_to_depot = 0 if warehouse_number == 'D1' else float('inf')
+        self.path_score = mapping.fromkeys(mapping, 0)
 
     # Purchase additional warehouse size, update the record
     def purchase_additional_warehouse_size(self, size, date):
@@ -58,12 +56,12 @@ class Warehouse:
                     self.max_warehouse_size = self.max_warehouse_size + self.added_warehouse_size[index]
                     warehouse_purchase_cost = warehouse_purchase_cost + (29.725 * self.max_warehouse_size * days_used / int(global_config['SIMULATION_DAYS']))
                 index = index + 1
-            print('Warehouse {} Purchase Cost [ capacity: {}, days used: {} ]: {}'
+            print('Warehouse {} purchase cost [ capacity: {}, days used: {} ]: {}'
                   .format(self.warehouse_number, self.max_warehouse_size, int(global_config['SIMULATION_DAYS']) - self.purchase_date, warehouse_purchase_cost))
             return warehouse_purchase_cost
 
         else:
             warehouse_purchase_cost = 29.725 * self.max_warehouse_size * days_used / int(global_config['SIMULATION_DAYS'])
-            print('Warehouse {} Purchase Cost [ capacity: {}, days used: {} ]: {}'
+            print('Warehouse {} purchase cost [ capacity: {}, days used: {} ]: {}'
                   .format(self.warehouse_number, self.max_warehouse_size, days_used, warehouse_purchase_cost))
             return warehouse_purchase_cost
