@@ -2,9 +2,9 @@
 # -*- coding: utf-8 -*-
 import random
 import config
+import time
 from tqdm import tqdm
 from colorama import Fore
-
 
 
 class Reinforcement:
@@ -59,13 +59,11 @@ class Reinforcement:
         # 9. Record the shortest cycle time in each repeat cycle
         if total_cycle_time < self.shortest_cycle_time:
 
-            index = 0
             # 10. Reward the preferred path with higher path score
-            for visited_node in self.visited_list:
+            for index, visited_node in enumerate(self.visited_list):
                 if index == 0:
                     visited_node.path_score[visited_node.warehouse_number] += 1
                 visited_node.path_score[self.visited_list[index - 1].warehouse_number] += 1
-                index += 1
 
             self.shortest_cycle_time = total_cycle_time
             self.shortest_path = self.visited_list.copy()
@@ -84,9 +82,14 @@ class Reinforcement:
             self.run_simulation()
 
         print('Shortest path travel time: {0:.2f} days'.format(self.shortest_cycle_time))
+        print('Shortest path: ', end="")
         for node in self.shortest_path:
             print(' 🡲 {}'.format(node.warehouse_number), end="")
         print(' 🡲 D1')
+        time.sleep(1)
         return self.shortest_path
+
+    def get_shortest_cycle_time(self):
+        return self.shortest_cycle_time
 
 
