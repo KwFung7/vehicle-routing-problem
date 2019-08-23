@@ -18,6 +18,7 @@ class Reinforcement:
     def __init__(self, warehouse_list):
         self.warehouse_list = warehouse_list
 
+    # Run simulation to update shortest cycle time and shortest path
     def run_simulation(self):
         global_config = config.get_global_config()
         reinforcement_config = config.get_reinforcement_config()
@@ -72,6 +73,7 @@ class Reinforcement:
         self.unvisited_list = self.warehouse_list.copy()
         self.visited_list.clear()
 
+    # Get shortest path with provided warehouse distance
     def get_shortest_path(self):
         reinforcement_config = config.get_reinforcement_config()
         self.unvisited_list = self.warehouse_list.copy()
@@ -89,6 +91,7 @@ class Reinforcement:
         time.sleep(1)
         return self.shortest_path
 
+    # Must run this function after get_shortest_path to return cycle time
     def get_shortest_cycle_time(self):
         return self.shortest_cycle_time
 

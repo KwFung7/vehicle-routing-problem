@@ -10,7 +10,8 @@ def get_equipment_cost(truck_list, warehouse_list):
     print('Equipment cost: {}'.format(equipment_cost))
 
 
-# Get normalized operating cost with total truck operating cost, total demand, initial total products and end total products
+# Get normalized operating cost with total truck operating cost,
+# total demand, initial total products and end total products
 def get_normalized_operating_cost(truck_list, total_demand, total_product_start, total_product_end):
     total_truck_operating_cost = truck_list.get_total_truck_operating_cost()
     normalized_operating_cost = total_truck_operating_cost * total_demand / (total_demand + total_product_start - total_product_end)
