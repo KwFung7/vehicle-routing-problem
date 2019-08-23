@@ -6,18 +6,61 @@ import config
 class Warehouse:
     added_warehouse_size = []
     additional_purchase_date = []
+    last_loading_time = 0
 
-    def __init__(self, warehouse_number, max_warehouse_size, purchase_date, inventory, demand, demand_growth, size_limit, truck_size_limit, mapping):
+    def __init__(self, warehouse_number, max_warehouse_size, purchase_date, inventory, initial_demand, demand_growth, size_limit, truck_size_limit, mapping):
         self.warehouse_number = warehouse_number
         self.max_warehouse_size = min(max_warehouse_size, size_limit)
         self.purchase_date = purchase_date
         self.inventory = min(inventory, self.max_warehouse_size)
-        self.demand = demand
+        self.initial_demand = initial_demand
+        self.demand = initial_demand
         self.demand_growth = demand_growth
         self.size_limit = size_limit
         self.truck_size_limit = truck_size_limit
         self.mapping = mapping
         self.path_score = mapping.fromkeys(mapping, 0)
+
+    # Calculate current inventory with given time
+    # When inventory is below 0, program should throw error
+    def update_current_inventory(self, timestamp):
+        global_config = config.get_global_config()
+        demand_growth_period = int(global_config['DEMAND_GROWTH_PERIOD'])
+
+        # When both time are within same 30 days period
+        if (self.last_loading_time / demand_growth_period) == (timestamp / demand_growth_period):
+            current_demand = self.get_current_demand(self.last_loading_time)
+            self.inventory = self.inventory - ((timestamp - self.last_loading_time) * current_demand)
+        else:
+            # If timestamp is 31.4, remaining value is 1.4
+            # remaining value should calculate with growth demand
+            remaining_val = timestamp % demand_growth_period
+            current_demand = self.get_current_demand(timestamp)
+            self.inventory = self.inventory - (remaining_val * current_demand)
+
+            current_demand = self.get_current_demand(self.last_loading_time)
+            self.inventory = self.inventory - ((timestamp - remaining_val - self.last_loading_time) * current_demand)
+
+        self.last_loading_time = timestamp
+
+        # If inventory dropped below 0, program terminated
+        if self.inventory < 0:
+            raise RuntimeError('Warehouse {} inventory dropped below 0'.format(self.warehouse_number))
+
+        return self.inventory
+
+    # Calculate current demand with given timestamp
+    def get_current_demand(self, timestamp):
+        global_config = config.get_global_config()
+        demand_growth_period = int(global_config['DEMAND_GROWTH_PERIOD'])
+
+        if timestamp < demand_growth_period:
+            return self.initial_demand
+        else:
+            current_demand = self.initial_demand
+            for i in range(int(timestamp / demand_growth_period)):
+                current_demand = current_demand * self.demand_growth
+            return current_demand
 
     # Purchase additional warehouse size, update the record
     def purchase_additional_warehouse_size(self, size, date):

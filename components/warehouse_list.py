@@ -10,6 +10,10 @@ class WarehouseList:
     def append_warehouse_record(self, warehouse):
         self.warehouse_list.append(warehouse)
 
+    def update_all_warehouse_inventory(self, timestamp):
+        for warehouse in self.warehouse_list:
+            warehouse.update_current_inventory(timestamp)
+
     # Get total warehouse purchase cost from all warehouse object
     def get_total_warehouse_purchase_cost(self):
         for warehouse in self.warehouse_list:
