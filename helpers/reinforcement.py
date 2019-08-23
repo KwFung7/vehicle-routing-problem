@@ -2,6 +2,9 @@
 # -*- coding: utf-8 -*-
 import random
 import config
+from tqdm import tqdm
+from colorama import Fore
+
 
 
 class Reinforcement:
@@ -66,7 +69,6 @@ class Reinforcement:
 
             self.shortest_cycle_time = total_cycle_time
             self.shortest_path = self.visited_list.copy()
-            print('Update shortest path travel time: {0:.2f} days'.format(self.shortest_cycle_time))
 
         # 11. Reset the list for next round
         self.unvisited_list = self.warehouse_list.copy()
@@ -77,12 +79,9 @@ class Reinforcement:
         self.unvisited_list = self.warehouse_list.copy()
 
         # 3. Repeat simulation to investigate shortest path
-        repeat_cycle = 0
-        while repeat_cycle <= int(reinforcement_config['REPEAT_TIME']):
+        print('Running shortest path simulation...')
+        for i in tqdm(range(int(reinforcement_config['REPEAT_TIME'])), Fore.BLUE):
             self.run_simulation()
-            repeat_cycle = repeat_cycle + 1
-            print('Running shortest path simulation {0:.2f}% ...'
-                  .format(repeat_cycle / int(reinforcement_config['REPEAT_TIME']) * 100))
 
         print('Shortest path travel time: {0:.2f} days'.format(self.shortest_cycle_time))
         for node in self.shortest_path:

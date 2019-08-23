@@ -59,6 +59,7 @@ def main():
     truck_list_inst = initialize_trucks()
     warehouse_list_inst = initialize_warehouses()
 
+    # Get shortest path and cycle time with reinforcement learning
     reinforcement = Reinforcement(warehouse_list_inst.warehouse_list)
     shortest_path = reinforcement.get_shortest_path()
 
