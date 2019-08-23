@@ -41,9 +41,9 @@ def initialize_warehouses():
 
             warehouse = Warehouse(
                 row['depot_warehouse_name'],
-                standard_unit,
+                float('inf') if row['depot_warehouse_name'] == 'D1' else standard_unit,
                 0,
-                standard_unit,
+                0 if row['depot_warehouse_name'] == 'D1' else standard_unit,
                 float(row['demand']),
                 float(row['demand_growth_rate']),
                 maximum_warehouse_size,
@@ -54,18 +54,25 @@ def initialize_warehouses():
     return warehouse_list
 
 
+# Only support one truck at this moment
+def start_timeline(truck, path, cycle_time):
+    for index, warehouse in enumerate(path):
+        print()
+
+
 def main():
     # Initialize warehouses and trucks
     truck_list_inst = initialize_trucks()
     warehouse_list_inst = initialize_warehouses()
 
     # Get shortest path and cycle time with reinforcement learning
-    reinforcement = Reinforcement(warehouse_list_inst.warehouse_list)
-    shortest_path = reinforcement.get_shortest_path()
+    # reinforcement = Reinforcement(warehouse_list_inst.warehouse_list)
+    # shortest_path = reinforcement.get_shortest_path()
+    # shortest_cycle_time = reinforcement.get_shortest_cycle_time()
 
-    truck_list_inst.get_total_truck_purchase_cost()
-    truck_list_inst.get_total_truck_operating_cost()
-    warehouse_list_inst.get_total_warehouse_purchase_cost()
+    # truck_list_inst.get_total_truck_purchase_cost()
+    # truck_list_inst.get_total_truck_operating_cost()
+    # warehouse_list_inst.get_total_warehouse_purchase_cost()
 
 
 if __name__ == '__main__':

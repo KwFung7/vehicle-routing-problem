@@ -14,7 +14,6 @@ class Warehouse:
         self.purchase_date = purchase_date
         self.inventory = min(inventory, self.max_warehouse_size)
         self.initial_demand = initial_demand
-        self.demand = initial_demand
         self.demand_growth = demand_growth
         self.size_limit = size_limit
         self.truck_size_limit = truck_size_limit
@@ -45,7 +44,7 @@ class Warehouse:
 
         # If inventory dropped below 0, program terminated
         if self.inventory < 0:
-            raise RuntimeError('Warehouse {} inventory dropped below 0'.format(self.warehouse_number))
+            raise RuntimeError('Warehouse {} inventory dropped below zero: {}'.format(self.warehouse_number, self.inventory))
 
         return self.inventory
 
@@ -59,7 +58,7 @@ class Warehouse:
         else:
             current_demand = self.initial_demand
             for i in range(int(timestamp / demand_growth_period)):
-                current_demand = current_demand * self.demand_growth
+                current_demand = current_demand * (1 + self.demand_growth)
             return current_demand
 
     # Purchase additional warehouse size, update the record
