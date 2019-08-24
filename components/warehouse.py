@@ -24,9 +24,13 @@ class Warehouse:
         global_config = config.get_global_config()
         standard_unit = int(global_config['STANDARD_UNIT'])
 
-        if self.inventory + amount > self.max_warehouse_size:
+        if self.inventory + amount > self.size_limit:
+            return
+        elif self.inventory + amount > self.max_warehouse_size:
             self.purchase_additional_warehouse_size(standard_unit, timestamp)
-        self.inventory += amount
+            self.inventory += amount
+        else:
+            self.inventory += amount
 
     def load_product_to_truck(self, amount):
         if self.inventory - amount >= 0:

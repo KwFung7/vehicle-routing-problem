@@ -25,9 +25,9 @@ class Timeline:
     def record_truck_event(self, timestamp, action, truck_number, point, load_amount):
         event = Event(timestamp, action, truck_number, point, load_amount)
         self.event_list.append(event)
-        # print('Event - time: {}, action: {}, truck: {}, point: {}, load amount: {}'.format(
-        #     timestamp, action, truck_number, point, load_amount
-        # ))
+        print('Event - time: {}, action: {}, truck: {}, point: {}, load amount: {}'.format(
+            timestamp, action, truck_number, point, load_amount
+        ))
 
     # Estimate warehouse demand in whole cycle to determine unload amount
     def get_estimated_cycle_demand(self, next_warehouse):
@@ -180,9 +180,9 @@ class Timeline:
                     continue
                 writer.writerow([
                     warehouse.warehouse_number,
-                    initial_warehouse_size,
+                    min(initial_warehouse_size, warehouse.size_limit),
                     warehouse.purchase_date,
-                    initial_warehouse_size
+                    min(initial_warehouse_size, warehouse.size_limit)
                 ])
                 for i, record in enumerate(warehouse.added_warehouse_size):
                     writer.writerow([
