@@ -6,6 +6,7 @@ from components.truck import Truck
 from components.truck_list import TruckList
 from components.warehouse import Warehouse
 from components.warehouse_list import WarehouseList
+from components.timeline import Timeline
 from helpers import helper
 from helpers.reinforcement import Reinforcement
 
@@ -54,21 +55,20 @@ def initialize_warehouses():
     return warehouse_list
 
 
-# Only support one truck at this moment
-def start_timeline(truck, path, cycle_time):
-    for index, warehouse in enumerate(path):
-        print()
-
-
 def main():
     # Initialize warehouses and trucks
     truck_list_inst = initialize_trucks()
     warehouse_list_inst = initialize_warehouses()
 
     # Get shortest path and cycle time with reinforcement learning
-    # reinforcement = Reinforcement(warehouse_list_inst.warehouse_list)
-    # shortest_path = reinforcement.get_shortest_path()
-    # shortest_cycle_time = reinforcement.get_shortest_cycle_time()
+    reinforcement = Reinforcement(warehouse_list_inst.warehouse_list)
+    shortest_path = reinforcement.get_shortest_path()
+    shortest_cycle_time = reinforcement.get_shortest_cycle_time()
+
+    # Start timeline and record event
+    timeline = Timeline()
+    truck = truck_list_inst.truck_list[0]
+    timeline.start_timeline(truck, shortest_path, shortest_cycle_time)
 
     # truck_list_inst.get_total_truck_purchase_cost()
     # truck_list_inst.get_total_truck_operating_cost()

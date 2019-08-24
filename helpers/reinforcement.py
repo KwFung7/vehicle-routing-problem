@@ -83,12 +83,12 @@ class Reinforcement:
         for i in tqdm(range(int(reinforcement_config['REPEAT_TIME'])), Fore.BLUE):
             self.run_simulation()
 
-        print('Shortest path travel time: {0:.2f} days'.format(self.shortest_cycle_time))
+        time.sleep(1)
+        print('\nShortest path travel time: {0:.2f} days'.format(self.shortest_cycle_time))
         print('Shortest path: ', end="")
         for node in self.shortest_path:
             print(' 🡲 {}'.format(node.warehouse_number), end="")
-        print(' 🡲 D1')
-        time.sleep(1)
+        print(' 🡲 D1 \n')
         return self.shortest_path
 
     # Must run this function after get_shortest_path to return cycle time
