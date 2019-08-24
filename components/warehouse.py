@@ -89,7 +89,7 @@ class Warehouse:
         else:
             raise RuntimeError('Warehouse {} size cannot exceed size limit {}'.format(self.warehouse_number, self.size_limit))
 
-    # Get warehouse purchase cost with warehouse maximum capacity and days used
+    # TODO: Get warehouse purchase cost with warehouse maximum capacity and days used
     # def get_warehouse_purchase_cost(self):
     #     global_config = config.get_global_config()
     #     days_used = int(global_config['SIMULATION_DAYS']) - self.purchase_date

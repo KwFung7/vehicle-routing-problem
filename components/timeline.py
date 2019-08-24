@@ -2,6 +2,9 @@
 # -*- coding: utf-8 -*-
 import config
 import math
+import csv
+import time
+import os
 from tqdm import tqdm
 from components.event import Event
 from components.truck import Truck
@@ -40,7 +43,7 @@ class Timeline:
         # Update arrival time
         travel_time = float(warehouse.mapping[next_warehouse.warehouse_number])
         self.current_time = self.current_time + travel_time
-        p_bar.update(int(travel_time))
+        p_bar.update(travel_time)
         estimated_cycle_demand = self.get_estimated_cycle_demand(next_warehouse)
 
         # Check all warehouse inventory, any of it below zero will throw error
@@ -97,6 +100,7 @@ class Timeline:
 
         # Repeat the cycle until days 7300
         print('Running vehicle routing simulation...')
+        time.sleep(1)
         p_bar = tqdm(total=simulation_days + 3)
         while self.current_time < simulation_days:
             # Start with calculated shortest path
@@ -105,7 +109,7 @@ class Timeline:
                 # Handling departure event, add load product time before departure
                 if self.current_time != 0:
                     self.current_time += load_product_time
-                    p_bar.update(int(load_product_time))
+                    p_bar.update(load_product_time)
                 for truck in self.truck_list:
                     self.record_truck_event(self.current_time, 'departure', truck.truck_number, warehouse.warehouse_number, 0)
 
@@ -124,13 +128,68 @@ class Timeline:
                 # Add truck departure record after finished simulation
                 if self.current_time >= simulation_days and next_warehouse.warehouse_number == 'D1':
                     self.current_time += load_product_time
-                    p_bar.update(int(load_product_time))
+                    p_bar.update(load_product_time)
                     for truck in self.truck_list:
                         self.record_truck_event(self.current_time, 'departure', truck.truck_number, next_warehouse.warehouse_number, 0)
                     break
 
         return self.event_list
 
-    def get_output(self):
-        print()
+    # Get solution csv output
+    def get_solution_output(self):
+        global_config = config.get_global_config()
+        solution_output = global_config['SOLUTION_OUTPUT']
+        dirname = os.path.dirname(__file__)
+        path = os.path.join(dirname, '../../solution/' + solution_output)
+        print('\nGenerating solution csv output...')
+        with open(path, 'w', newline='') as csvfile:
+            writer = csv.writer(csvfile)
+            for event in self.event_list:
+                writer.writerow([
+                    event.timestamp,
+                    event.action,
+                    event.truck_number,
+                    event.point, event.load_amount
+                ])
+        print('Finish {} output generation at {}'.format(solution_output, path))
+
+    # Get equipment csv output
+    def get_equipment_output(self):
+        global_config = config.get_global_config()
+        equipment_output = global_config['EQUIPMENT_OUTPUT']
+        initial_warehouse_size = global_config['INITIAL_WAREHOUSE_SIZE']
+        dirname = os.path.dirname(__file__)
+        path = os.path.join(dirname, '../../solution/' + equipment_output)
+        print('\nGenerating equipment csv output...')
+        with open(path, 'w', newline='') as csvfile:
+            writer = csv.writer(csvfile)
+
+            # Write final truck list
+            for truck in self.truck_list:
+                writer.writerow([
+                    truck.truck_number,
+                    truck.truck_size,
+                    truck.purchase_date,
+                    truck.truck_size
+                ])
+
+            # Write final warehouse list, sort the list with name first
+            self.path.sort(key=lambda item: int(item.warehouse_number[1:]))
+            for warehouse in self.path:
+                if warehouse.warehouse_number == 'D1':
+                    continue
+                writer.writerow([
+                    warehouse.warehouse_number,
+                    initial_warehouse_size,
+                    warehouse.purchase_date,
+                    initial_warehouse_size
+                ])
+                for i, record in enumerate(warehouse.added_warehouse_size):
+                    writer.writerow([
+                        warehouse.warehouse_number,
+                        record,
+                        warehouse.additional_purchase_date[i],
+                        0
+                    ])
+        print('Finish {} output generation at {}'.format(equipment_output, path))
 

@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 import config
 import csv
+import time
 from components.truck import Truck
 from components.truck_list import TruckList
 from components.warehouse import Warehouse
@@ -24,7 +25,7 @@ def initialize_trucks():
 
 def initialize_warehouses():
     global_config = config.get_global_config()
-    standard_unit = int(global_config['STANDARD_UNIT'])
+    initial_warehouse_size = int(global_config['INITIAL_WAREHOUSE_SIZE'])
     warehouse_list = WarehouseList()
 
     with open(global_config['DATASET_PATH'], newline='') as dataset:
@@ -42,9 +43,9 @@ def initialize_warehouses():
 
             warehouse = Warehouse(
                 row['depot_warehouse_name'],
-                float('inf') if row['depot_warehouse_name'] == 'D1' else standard_unit * 3,
+                float('inf') if row['depot_warehouse_name'] == 'D1' else initial_warehouse_size,
                 0,
-                0 if row['depot_warehouse_name'] == 'D1' else standard_unit * 3,
+                0 if row['depot_warehouse_name'] == 'D1' else initial_warehouse_size,
                 float(row['demand']),
                 float(row['demand_growth_rate']),
                 maximum_warehouse_size,
@@ -69,10 +70,15 @@ def main():
     # Start timeline and record event
     timeline = Timeline(truck_list_inst, warehouse_list_inst, shortest_cycle_time)
     timeline.start_timeline()
+    time.sleep(1)
 
+    # TODO: Calculate cost
     # truck_list_inst.get_total_truck_purchase_cost()
     # truck_list_inst.get_total_truck_operating_cost()
     # warehouse_list_inst.get_total_warehouse_purchase_cost()
+
+    timeline.get_solution_output()
+    timeline.get_equipment_output()
 
 
 if __name__ == '__main__':
