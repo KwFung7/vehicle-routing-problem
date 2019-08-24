@@ -20,6 +20,20 @@ class Warehouse:
         self.mapping = mapping
         self.path_score = mapping.fromkeys(mapping, 0)
 
+    def load_product_from_truck(self, amount, timestamp):
+        global_config = config.get_global_config()
+        standard_unit = int(global_config['STANDARD_UNIT'])
+
+        if self.inventory + amount > self.max_warehouse_size:
+            self.purchase_additional_warehouse_size(standard_unit, timestamp)
+        self.inventory += amount
+
+    def load_product_to_truck(self, amount):
+        if self.inventory - amount >= 0:
+            self.inventory -= amount
+        else:
+            raise RuntimeError('Warehouse {} inventory dropped below zero: {}'.format(self.warehouse_number, self.inventory))
+
     # Calculate current inventory with given time
     # When inventory is below 0, program should throw error
     def update_current_inventory(self, timestamp):
@@ -68,42 +82,44 @@ class Warehouse:
             return
 
         if self.max_warehouse_size + size <= self.size_limit:
+            self.max_warehouse_size += size
             self.added_warehouse_size.append(size)
             self.additional_purchase_date.append(date)
+            print('Warehouse {} maximum size enhance to {}'.format(self.warehouse_number, self.max_warehouse_size))
         else:
             raise RuntimeError('Warehouse {} size cannot exceed size limit {}'.format(self.warehouse_number, self.size_limit))
 
     # Get warehouse purchase cost with warehouse maximum capacity and days used
-    def get_warehouse_purchase_cost(self):
-        global_config = config.get_global_config()
-        days_used = int(global_config['SIMULATION_DAYS']) - self.purchase_date
-
-        # Depot dont have purchase cost
-        if self.warehouse_number == 'D1':
-            return 0
-
-        # When warehouse has additional size
-        if len(self.additional_purchase_date) > 0:
-            days_used = self.additional_purchase_date[0] - self.purchase_date
-            warehouse_purchase_cost = 29.725 * self.max_warehouse_size * days_used / int(global_config['SIMULATION_DAYS'])
-            index = 0
-            for new_purchase_date in self.additional_purchase_date:
-                # For last additional purchase
-                if index >= len(self.additional_purchase_date) - 1:
-                    days_used = int(global_config['SIMULATION_DAYS']) - new_purchase_date
-                    self.max_warehouse_size = self.max_warehouse_size + self.added_warehouse_size[index]
-                    warehouse_purchase_cost = warehouse_purchase_cost + (29.725 * self.max_warehouse_size * days_used / int(global_config['SIMULATION_DAYS']))
-                else:
-                    days_used = self.additional_purchase_date[index + 1] - new_purchase_date
-                    self.max_warehouse_size = self.max_warehouse_size + self.added_warehouse_size[index]
-                    warehouse_purchase_cost = warehouse_purchase_cost + (29.725 * self.max_warehouse_size * days_used / int(global_config['SIMULATION_DAYS']))
-                index = index + 1
-            print('Warehouse {} purchase cost [ capacity: {}, days used: {} ]: {}'
-                  .format(self.warehouse_number, self.max_warehouse_size, int(global_config['SIMULATION_DAYS']) - self.purchase_date, warehouse_purchase_cost))
-            return warehouse_purchase_cost
-
-        else:
-            warehouse_purchase_cost = 29.725 * self.max_warehouse_size * days_used / int(global_config['SIMULATION_DAYS'])
-            print('Warehouse {} purchase cost [ capacity: {}, days used: {} ]: {}'
-                  .format(self.warehouse_number, self.max_warehouse_size, days_used, warehouse_purchase_cost))
-            return warehouse_purchase_cost
+    # def get_warehouse_purchase_cost(self):
+    #     global_config = config.get_global_config()
+    #     days_used = int(global_config['SIMULATION_DAYS']) - self.purchase_date
+    #
+    #     # Depot dont have purchase cost
+    #     if self.warehouse_number == 'D1':
+    #         return 0
+    #
+    #     # When warehouse has additional size
+    #     if len(self.additional_purchase_date) > 0:
+    #         days_used = self.additional_purchase_date[0] - self.purchase_date
+    #         warehouse_purchase_cost = 29.725 * self.max_warehouse_size * days_used / int(global_config['SIMULATION_DAYS'])
+    #         index = 0
+    #         for new_purchase_date in self.additional_purchase_date:
+    #             # For last additional purchase
+    #             if index >= len(self.additional_purchase_date) - 1:
+    #                 days_used = int(global_config['SIMULATION_DAYS']) - new_purchase_date
+    #                 max_warehouse_size = self.max_warehouse_size + self.added_warehouse_size[index]
+    #                 warehouse_purchase_cost = warehouse_purchase_cost + (29.725 * max_warehouse_size * days_used / int(global_config['SIMULATION_DAYS']))
+    #             else:
+    #                 days_used = self.additional_purchase_date[index + 1] - new_purchase_date
+    #                 max_warehouse_size = self.max_warehouse_size + self.added_warehouse_size[index]
+    #                 warehouse_purchase_cost = warehouse_purchase_cost + (29.725 * max_warehouse_size * days_used / int(global_config['SIMULATION_DAYS']))
+    #             index = index + 1
+    #         print('Warehouse {} purchase cost [ capacity: {}, days used: {} ]: {}'
+    #               .format(self.warehouse_number, self.max_warehouse_size, int(global_config['SIMULATION_DAYS']) - self.purchase_date, warehouse_purchase_cost))
+    #         return warehouse_purchase_cost
+    #
+    #     else:
+    #         warehouse_purchase_cost = 29.725 * self.max_warehouse_size * days_used / int(global_config['SIMULATION_DAYS'])
+    #         print('Warehouse {} purchase cost [ capacity: {}, days used: {} ]: {}'
+    #               .format(self.warehouse_number, self.max_warehouse_size, days_used, warehouse_purchase_cost))
+    #         return warehouse_purchase_cost
