@@ -89,6 +89,7 @@ class Reinforcement:
         for node in self.shortest_path:
             print(' 🡲 {}'.format(node.warehouse_number), end="")
         print(' 🡲 D1 \n')
+        time.sleep(1)
         return self.shortest_path
 
     # Must run this function after get_shortest_path to return cycle time
