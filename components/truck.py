@@ -26,10 +26,10 @@ class Truck:
     # Load product from depot or relay warehouse
     def load_product(self, warehouse, amount):
         if self.truck_size > warehouse.truck_size_limit:
-            raise RuntimeError('Truck {} size {} is larger than warehouse {} limit {}'.format(
-                self.truck_number, self.truck_size, warehouse.warehouse_number, warehouse.truck_size_limit))
+            return 0
 
         if warehouse.warehouse_number == 'D1':
+
             load_amount = self.truck_size - self.products_inventory
             self.products_inventory = self.truck_size
             return load_amount
@@ -40,20 +40,20 @@ class Truck:
     # Unload product and update warehouse inventory,
     # truck inventory cannot drop below zero
     def unload_product(self, warehouse, amount, timestamp):
-        if self.truck_size > warehouse.truck_size_limit:
-            raise RuntimeError('Truck {} size {} is larger than warehouse {} limit {}'.format(
-                self.truck_number, self.truck_size, warehouse.warehouse_number, warehouse.truck_size_limit))
-
-        if warehouse.warehouse_number == 'D1':
+        if self.truck_size > warehouse.truck_size_limit or warehouse.warehouse_number == 'D1':
             return 0
 
         if self.products_inventory - amount >= 0:
             self.products_inventory -= amount
             warehouse.load_product_from_truck(amount, timestamp)
             return -amount
+        elif self.products_inventory == 0:
+            return 0
         else:
-            raise RuntimeError('Truck {} inventory dropped below zero: {}'.format(
-                self.truck_number, self.products_inventory - amount))
+            load_amount = self.products_inventory
+            warehouse.load_product_from_truck(load_amount, timestamp)
+            self.products_inventory = 0
+            return -load_amount
 
     # Get truck purchase cost with truck maximum capacity and days used
     def get_truck_purchase_cost(self):

@@ -42,9 +42,9 @@ def initialize_warehouses():
 
             warehouse = Warehouse(
                 row['depot_warehouse_name'],
-                float('inf') if row['depot_warehouse_name'] == 'D1' else standard_unit*3,
+                float('inf') if row['depot_warehouse_name'] == 'D1' else standard_unit * 3,
                 0,
-                0 if row['depot_warehouse_name'] == 'D1' else standard_unit*3,
+                0 if row['depot_warehouse_name'] == 'D1' else standard_unit * 3,
                 float(row['demand']),
                 float(row['demand_growth_rate']),
                 maximum_warehouse_size,

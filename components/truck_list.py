@@ -11,6 +11,10 @@ class TruckList:
     def purchase_new_truck(self, truck):
         self.truck_list.append(truck)
 
+    # Return truck with smallest size
+    def get_min_truck(self):
+        return min(self.truck_list, key=lambda truck: truck.truck_size)
+
     # Get total truck purchase cost from all truck object
     def get_total_truck_purchase_cost(self):
         for truck in self.truck_list:

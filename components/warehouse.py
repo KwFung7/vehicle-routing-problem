@@ -85,7 +85,7 @@ class Warehouse:
             self.max_warehouse_size += size
             self.added_warehouse_size.append(size)
             self.additional_purchase_date.append(date)
-            print('Warehouse {} maximum size enhance to {}'.format(self.warehouse_number, self.max_warehouse_size))
+            # print('Warehouse {} maximum size enhance to {}'.format(self.warehouse_number, self.max_warehouse_size))
         else:
             raise RuntimeError('Warehouse {} size cannot exceed size limit {}'.format(self.warehouse_number, self.size_limit))
 
